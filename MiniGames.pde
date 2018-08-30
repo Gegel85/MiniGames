@@ -14,7 +14,7 @@ ConnexionsAcceptor acceptor;
 int myid = -1;
 int menu = 0;
 int turn = -1;
-Pendu pendu = new Pendu();
+Game currentGame;
 
 void setup()
 {
@@ -84,8 +84,37 @@ void draw()
             text("Pictionary", 560, 20);
             break;
         case 2:
-            if (pendu.chooseTurn == myid && pendu.word == null) {
-                pendu.word = readString("Word", "Enter a word to guess");
+            if (((Pendu)currentGame).word == null)
+                text((((Pendu)currentGame).chooseTurn == -1 ? "Host" : "Player " + ((Pendu)currentGame).chooseTurn) + " is choosing a word", 100, 10);
+            while (((Pendu)currentGame).chooseTurn == myid && ((Pendu)currentGame).word == null) {
+                ((Pendu)currentGame).word = readString("Enter a word to guess", "Word").toLowerCase();
+                if (((Pendu)currentGame).isWordValid())
+                    if (isServer) {
+                        notifyConnections("length " + ((Pendu)currentGame).word.length());
+                        ((Pendu)currentGame).showed = "";
+                        ((Pendu)currentGame).wordLength = ((Pendu)currentGame).word.length();
+                        for (int i = 0; i < ((Pendu)currentGame).wordLength; i++)
+                            ((Pendu)currentGame).showed = ((Pendu)currentGame).showed + "_";
+                    } else
+                        client.out.println("word " + ((Pendu)currentGame).word);
+                else {
+                    while (!((Pendu)currentGame).isWordValid())
+                        ((Pendu)currentGame).word = readString("Invalid word\nThere needs to be only letters\n\nEnter a word to guess", "Word").toLowerCase();
+                    if (isServer) {
+                        notifyConnections("length " + ((Pendu)currentGame).word.length());
+                        ((Pendu)currentGame).showed = "";
+                        ((Pendu)currentGame).wordLength = ((Pendu)currentGame).word.length();
+                        for (int i = 0; i < ((Pendu)currentGame).wordLength; i++)
+                            ((Pendu)currentGame).showed = ((Pendu)currentGame).showed + "_";
+                    } else
+                        client.out.println("word " + ((Pendu)currentGame).word);
+                }
+            }
+            textSize(20);
+            text(((Pendu)currentGame).showed, 335 - ((Pendu)currentGame).word.length() * 5, 250);
+            if (((Pendu)currentGame).chooseTurn == myid) {
+                textSize(10);
+                text("The word is: \"" + ((Pendu)currentGame).word + "\"", 560 - ((Pendu)currentGame).word.length() * 5.00001, 10);
             }
             break;
         case 3:

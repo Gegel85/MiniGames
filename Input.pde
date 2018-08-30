@@ -8,11 +8,9 @@ void keyPressed()
             notifyConnections("change menu " + menu);
         } else if (keyCode == KeyEvent.VK_ENTER && menu >= 0 && menu <= 1 && isServer) {
             menu += 2;
-            if (menu == 2) {
-                pendu = new Pendu();
-                pendu.chooseTurn = -1;
-                pendu.turn = 0;
-            }
+            if (menu == 2)
+                currentGame = new Pendu();
+            ((Pendu)currentGame).showed = "";
             notifyConnections("change menu " + menu);
         }
         if (keyCode == 27 && isServer) {

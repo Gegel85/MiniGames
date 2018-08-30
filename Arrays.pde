@@ -35,3 +35,13 @@ Boolean compareStrings(String str1, String str2)
             return (false);
     return (true);
 }
+
+int firstSpace(String str)
+{
+    char[] array = str.toCharArray();
+    
+    for (int i = 0; i < array.length; i++)
+        if (array[i] == ' ')
+            return (i);
+    return str.length();
+}
