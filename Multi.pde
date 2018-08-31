@@ -13,7 +13,7 @@ public class Connection
             this.socket = socket;
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
-            reader = new ReadSocket(socket.getLocalAddress().toString(), out, in);
+            reader = new ReadSocket(socket.getInetAddress().toString(), out, in);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -24,7 +24,7 @@ public class Connection
         this.in = in;
         this.out = out;
         this.socket = socket;
-        reader = new ReadSocket(socket.getLocalAddress().toString(), out, in);
+        reader = new ReadSocket(socket.getInetAddress().toString(), out, in);
     }
 }
 

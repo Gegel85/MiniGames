@@ -37,7 +37,7 @@ void mousePressed()
 {
     try {
         if (mouseX <= 15 && (mouseY - 1) / 10 < clientsConnected.length && isServer && clientsConnected[(mouseY - 1) / 10] != null) {
-            clientsBanned = AddToStringArray(clientsBanned, clientsConnected[(mouseY - 1) / 10].socket.getLocalAddress().toString());
+            clientsBanned = AddToStringArray(clientsBanned, clientsConnected[(mouseY - 1) / 10].socket.getInetAddress().toString());
             clientsConnected[(mouseY - 1) / 10].out.println("banned");
             clientsConnected[(mouseY - 1) / 10].out.flush();
             try {

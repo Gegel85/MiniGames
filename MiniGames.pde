@@ -39,7 +39,7 @@ void checkDisconnectedClients()
 {
     for (int i = 0; i < clientsConnected.length; i++) {
         if (clientsConnected[i] != null && !clientsConnected[i].reader.isAlive()) {
-            println("Client with id " + i + " (ip: " + clientsConnected[i].socket.getLocalAddress().toString() + ") disconnected");
+            println("Client with id " + i + " (ip: " + clientsConnected[i].socket.getInetAddress().toString() + ") disconnected");
             clientsConnected[i] = null;
             connected[i] = null;
             spectator[i + 1] = false;
@@ -63,7 +63,7 @@ void draw()
         if (isServer)
             checkDisconnectedClients();
         else
-            text("Connected on " + client.socket.getLocalAddress().toString() + "   " + (spectator[0] ? "Spectating" : "Playing"), 0, 10);
+            text("Connected on " + client.socket.getInetAddress().toString() + "   " + (spectator[0] ? "Spectating" : "Playing"), 0, 10);
         for (int i = 0; i < connected.length; i++)
             if (mouseX <= 30 && mouseY <= i * 10 + 10 && mouseY > i * 10 && isServer) {
                 fill(255, 0, 0);

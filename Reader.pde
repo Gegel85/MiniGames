@@ -30,7 +30,7 @@ public class ReadSocket extends Thread {
             } else if (buffer.startsWith("connected") && !isServer) {
                 for (int i = 0; i < connected.length; i++)
                     if (connected[i] == null) {
-                        if (compareStrings(buffer.subSequence(10, buffer.length()).toString(), client.socket.getLocalAddress().toString()))
+                        if (compareStrings(buffer.subSequence(10, buffer.length()).toString(), client.socket.getInetAddress().toString()))
                             myid = i;
                         connected[i] = buffer.subSequence(10, buffer.length()).toString();
                         break;

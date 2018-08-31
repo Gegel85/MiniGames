@@ -2,7 +2,7 @@ int AddToConnectionArray(String[] strings, Connection[] array, Connection newCon
 {
     for (int i = 0; i < array.length; i++)
         if (array[i] == null) {
-            strings[i] = newConnection.socket.getLocalAddress().toString();
+            strings[i] = newConnection.socket.getInetAddress().toString();
             array[i] = newConnection;
             newConnection.index = i;
             return i;

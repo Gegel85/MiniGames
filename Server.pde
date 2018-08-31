@@ -21,7 +21,7 @@ public class ConnectionsAcceptor extends Thread {
                 return;
             }
             for (int i = 0; clientsBanned != null && i < clientsBanned.length; i++)
-                if (compareStrings(clientsBanned[i], socket.getLocalAddress().toString())) {
+                if (compareStrings(clientsBanned[i], socket.getInetAddress().toString())) {
                     out = new PrintWriter(socket.getOutputStream());
                     out.println("banned");
                     out.flush();
@@ -32,10 +32,10 @@ public class ConnectionsAcceptor extends Thread {
                     return;
                 }
             for (int i = 0; clientsConnected != null && i < clientsConnected.length; i++)
-                if (clientsConnected[i] != null && compareStrings(clientsConnected[i].socket.getLocalAddress().toString(), socket.getLocalAddress().toString()))
+                if (clientsConnected[i] != null && compareStrings(clientsConnected[i].socket.getInetAddress().toString(), socket.getInetAddress().toString()))
                     found++;
             if (found > 0) {
-                println("Client with ip " + socket.getLocalAddress().toString() + " is already connected");
+                println("Client with ip " + socket.getInetAddress().toString() + " is already connected");
                 out = new PrintWriter(socket.getOutputStream());
                 out.println("already connected");
                 out.flush();
@@ -51,17 +51,17 @@ public class ConnectionsAcceptor extends Thread {
             Connection.out.println("change menu " + menu);
             for (int i = 0; i < clientsConnected.length; i++)
                 if (i == index) {
-                    Connection.out.println("connected " + Connection.socket.getLocalAddress().toString());
+                    Connection.out.println("connected " + Connection.socket.getInetAddress().toString());
                 } else if (clientsConnected[i] != null) {
-                    Connection.out.println("connected " + clientsConnected[i].socket.getLocalAddress().toString());
-                    clientsConnected[i].out.println("connected " + Connection.socket.getLocalAddress().toString());
+                    Connection.out.println("connected " + clientsConnected[i].socket.getInetAddress().toString());
+                    clientsConnected[i].out.println("connected " + Connection.socket.getInetAddress().toString());
                     clientsConnected[i].out.flush();
                 }
             for (int i = 0; i < spectator.length; i++)
                 if (spectator[i])
                     Connection.out.println("spectator " + i);
             Connection.out.flush();
-            println("Client n°" + nbOfClientsConnected + " connected with IP " + socket.getLocalAddress().toString() + " id: " + index);
+            println("Client n°" + nbOfClientsConnected + " connected with IP " + socket.getInetAddress().toString() + " id: " + index);
         } catch(Exception e) {
             JOptionPane.showMessageDialog(null, e + "", "Connection Error", JOptionPane.ERROR_MESSAGE);
             try {
