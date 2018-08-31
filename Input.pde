@@ -17,7 +17,8 @@ void keyPressed()
                 menu -= 2;
                 currentGame = null;
                 notifyConnections("change menu " + menu);
-            }
+            } else
+                System.exit(0);
         }
         if (currentGame != null)
             currentGame.keyPressed(keyCode, key);

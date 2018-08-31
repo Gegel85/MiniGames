@@ -54,7 +54,8 @@ class Pendu extends Game
             }
             notifyConnections("turn " + turn);
         }
-        if (word != null && (showed.split("_").length == 1 || missedLetters.length() == 11)) {
+        if (word != null && (!showed.contains("_") || missedLetters.length() == 11)) {
+            timer = 0;
             notifyConnections("end");
             wordLength = 0;
             turn = -1;
@@ -71,38 +72,19 @@ class Pendu extends Game
         if (timer < 120)
             timer++;
         while (chooseTurn == myid && word == null && timer >= 120) {
-            word = readString("Enter a word to guess", "Word").toLowerCase();
-            if (((Pendu)currentGame).isWordValid())
-                if (isServer) {
-                    notifyConnections("length " + word.length());
-                    showed = "";
-                    wordLength = word.length();
-                    for (int i = 0; i < wordLength; i++)
-                        showed = showed + "_";
-                    missedLetters = "";
-                } else {
-                    client.out.println("word " + word);
-                    client.out.flush();
-                }
-            else {
-                while (!isWordValid())
-                    word = readString("Invalid word\nThere needs to be only letters\n\nEnter a word to guess", "Word").toLowerCase();
-                if (isServer) {
-                    notifyConnections("length " + word.length());
-                    showed = "";
-                    wordLength = word.length();
-                    for (int i = 0; i < wordLength; i++)
-                        if (word.charAt(i) == '-') {
-                            showed = showed + "-";
-                            notifyConnections("letter " + i + " -");
-                        } else
-                            showed = showed + "_";
-                        missedLetters = "";
-                } else {
-                    client.out.println("word " + word);
-                    client.out.flush();
-                }
+            while (!isWordValid())
+                word = readString((word == null ? "" : "Invalid word\nThere needs to be only letters\n\n") + "Enter a word to guess", "Word").toLowerCase();
+            if (isServer) {
+                notifyConnections("length " + word.length());
+            } else {
+                client.out.println("word " + word);
+                client.out.flush();
             }
+            showed = "";
+            wordLength = word.length();
+            for (int i = 0; i < wordLength; i++)
+                showed = showed + "_";
+            missedLetters = "";
         }
     }
     
@@ -121,7 +103,7 @@ class Pendu extends Game
             text(missedLetters.charAt(i), i * 10 + 100, 400);
         if (chooseTurn == myid && word != null) {
             textSize(10);
-            text("The word is: \"" + word + "\"", 560 - word.length() * 5.00001, 10);
+            text("The word is: \"" + word + "\"", 560 - word.length() * 5.00001, 40);
         }
         stroke(255);
         fill(0);
@@ -208,11 +190,11 @@ class Pendu extends Game
             for (int i = 0; i < wordLength; i++)
                 showed = showed + "_";
         } else if (data.startsWith("end")) {
+            word = null;
             wordLength = 0;
             turn = -1;
             chooseTurn = -1;
             timer = 0;
-            word = null;
         } else if (data.startsWith("turn")) {
             turn = Integer.parseInt(data.subSequence(5, data.length()).toString());
         } else if (data.startsWith("choose")) {

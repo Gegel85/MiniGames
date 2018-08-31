@@ -29,7 +29,7 @@ void setup()
             client = new Connection(new Socket(readString("IP Address", "Enter the ip address of the server"), readInteger("Port", "Enter port")));
         } catch(Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, e + "", "Communication Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e + "", "Connect Error", JOptionPane.ERROR_MESSAGE);
             exit();
         }
     }
