@@ -60,7 +60,7 @@ void draw()
         if (isServer)
             checkDisconnectedClients();
         else
-            text("Connected on " + client.socket.getLocalAddress().toString() + "   " + (spectator[0] ? "Playing" : "Spectating"), 0, 10);
+            text("Connected on " + client.socket.getLocalAddress().toString() + "   " + (spectator[0] ? "Spectating" : "Playing"), 0, 10);
         for (int i = 0; i < connected.length; i++)
             if (mouseX <= 30 && mouseY <= i * 10 + 10 && mouseY > i * 10 && isServer) {
                 fill(255, 0, 0);
@@ -83,41 +83,11 @@ void draw()
         case 1:
             text("Pictionary", 560, 20);
             break;
-        case 2:
-            if (((Pendu)currentGame).word == null)
-                text((((Pendu)currentGame).chooseTurn == -1 ? "Host" : "Player " + ((Pendu)currentGame).chooseTurn) + " is choosing a word", 100, 10);
-            while (((Pendu)currentGame).chooseTurn == myid && ((Pendu)currentGame).word == null) {
-                ((Pendu)currentGame).word = readString("Enter a word to guess", "Word").toLowerCase();
-                if (((Pendu)currentGame).isWordValid())
-                    if (isServer) {
-                        notifyConnections("length " + ((Pendu)currentGame).word.length());
-                        ((Pendu)currentGame).showed = "";
-                        ((Pendu)currentGame).wordLength = ((Pendu)currentGame).word.length();
-                        for (int i = 0; i < ((Pendu)currentGame).wordLength; i++)
-                            ((Pendu)currentGame).showed = ((Pendu)currentGame).showed + "_";
-                    } else
-                        client.out.println("word " + ((Pendu)currentGame).word);
-                else {
-                    while (!((Pendu)currentGame).isWordValid())
-                        ((Pendu)currentGame).word = readString("Invalid word\nThere needs to be only letters\n\nEnter a word to guess", "Word").toLowerCase();
-                    if (isServer) {
-                        notifyConnections("length " + ((Pendu)currentGame).word.length());
-                        ((Pendu)currentGame).showed = "";
-                        ((Pendu)currentGame).wordLength = ((Pendu)currentGame).word.length();
-                        for (int i = 0; i < ((Pendu)currentGame).wordLength; i++)
-                            ((Pendu)currentGame).showed = ((Pendu)currentGame).showed + "_";
-                    } else
-                        client.out.println("word " + ((Pendu)currentGame).word);
-                }
-            }
-            textSize(20);
-            text(((Pendu)currentGame).showed, 335 - ((Pendu)currentGame).word.length() * 5, 250);
-            if (((Pendu)currentGame).chooseTurn == myid) {
-                textSize(10);
-                text("The word is: \"" + ((Pendu)currentGame).word + "\"", 560 - ((Pendu)currentGame).word.length() * 5.00001, 10);
-            }
-            break;
-        case 3:
+        default:
+            if (isServer)
+                currentGame.serverRoutine();
+            currentGame.clientRoutine();
+            currentGame.displayElements();
         }
     } catch (Exception e) {
         e.printStackTrace();

@@ -22,4 +22,7 @@ class Game
     {
       
     }
+    
+    void keyPressed(int keyCode, char key) {
+           }
 }

@@ -10,7 +10,6 @@ void keyPressed()
             menu += 2;
             if (menu == 2)
                 currentGame = new Pendu();
-            ((Pendu)currentGame).showed = "";
             notifyConnections("change menu " + menu);
         }
         if (keyCode == 27 && isServer) {
@@ -20,6 +19,9 @@ void keyPressed()
                 menu -= 2;
                 notifyConnections("change menu " + menu);
             }
+        }
+        if (currentGame != null) {
+            currentGame.keyPressed(keyCode, key);
         }
     } catch (Exception e) {
         e.printStackTrace();

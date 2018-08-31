@@ -43,9 +43,15 @@ public class ReadSocket extends Thread {
             } else if (currentGame != null)
                 currentGame.useRecievedData(buffer);
         } catch(Exception e) {
+            e.printStackTrace();
             if (!isServer) {
                 JOptionPane.showMessageDialog(null, e + "", "Communication Error", JOptionPane.ERROR_MESSAGE);
                 exit();
+            } else {
+                try {
+                    out.println("error " + e);
+                    out.flush();
+                } catch(Exception f) {}
             }
             return (false);
         }
