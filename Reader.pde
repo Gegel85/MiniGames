@@ -3,9 +3,11 @@ public class ReadSocket extends Thread {
     PrintWriter out;
 
     public Boolean getData() {
-        String buffer;
+        String buffer = "";
+        
         try {
             buffer = in.readLine();
+            println("Recieved \"" + buffer + "\"");
             if (buffer.startsWith("error") && !isServer) {
                 JOptionPane.showMessageDialog(null, "Internal server error: " + buffer.subSequence(6, buffer.length()), "Error", JOptionPane.ERROR_MESSAGE);
                 exit();
@@ -35,11 +37,6 @@ public class ReadSocket extends Thread {
                     }
             } else if (buffer.startsWith("disconnected") && !isServer) {
                 connected[Integer.parseInt(buffer.subSequence(13, buffer.length()).toString())] = null;
-            } else if (buffer.startsWith("spectator")) {
-                spectator[Integer.parseInt(buffer.subSequence(10, buffer.length()).toString())] = !spectator[Integer.parseInt(buffer.subSequence(10, buffer.length()).toString())];
-                if (isServer) {
-                    notifyConnections(buffer);
-                }
             } else if (currentGame != null)
                 currentGame.useRecievedData(buffer);
         } catch(Exception e) {

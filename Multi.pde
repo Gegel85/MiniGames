@@ -1,12 +1,13 @@
-public class Connexion
+public class Connection
 {
     PrintWriter out;
     BufferedReader in;
     Socket socket;
     String name;
     ReadSocket reader;
+    int index;
     
-    public Connexion(Socket socket)
+    public Connection(Socket socket)
     {
         try {
             this.socket = socket;
@@ -18,7 +19,7 @@ public class Connexion
         }
     }
     
-    public Connexion(Socket socket, BufferedReader in, PrintWriter out)
+    public Connection(Socket socket, BufferedReader in, PrintWriter out)
     {
         this.in = in;
         this.out = out;

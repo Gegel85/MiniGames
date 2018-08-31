@@ -6,6 +6,7 @@ class Pendu extends Game
     String word;
     String missedLetters = "";
     String showed = "";
+    int timer = 0;
     
     public Pendu()
     {
@@ -34,7 +35,7 @@ class Pendu extends Game
         if (chooseTurn == -2 || spectator[chooseTurn + 1] || (chooseTurn >= 0 && clientsConnected[chooseTurn] == null)) {
             if (chooseTurn < -1)
                 chooseTurn = -1;
-            for (int i = chooseTurn; (spectator[chooseTurn + 1] || (chooseTurn >= 0 && clientsConnected[chooseTurn] == null)); chooseTurn = (chooseTurn + 2) % spectator.length - 1) {
+            for (int i = (chooseTurn <= -1 ? spectator.length - 1 : chooseTurn - 1); (spectator[chooseTurn + 1] || (chooseTurn >= 0 && clientsConnected[chooseTurn] == null)); chooseTurn = (chooseTurn + 2) % spectator.length - 1) {
                 if (chooseTurn == i) {
                     chooseTurn = -2;
                     break;
@@ -45,7 +46,7 @@ class Pendu extends Game
         if (turn == -2 || chooseTurn == turn || spectator[turn + 1] || (turn >= 0 && clientsConnected[turn] == null)) {
             if (turn < -1)
                 turn = -1;
-            for (int i = turn; (chooseTurn == turn || spectator[turn + 1] || (turn >= 0 && clientsConnected[turn] == null)); turn = (turn + 2) % spectator.length - 1) {
+            for (int i = (turn == -1 ? spectator.length - 1 : turn - 1); (chooseTurn == turn || spectator[turn + 1] || (turn >= 0 && clientsConnected[turn] == null)); turn = (turn + 2) % spectator.length - 1) {
                 if (turn == i) {
                     turn = -2;
                     break;
@@ -53,12 +54,23 @@ class Pendu extends Game
             }
             notifyConnections("turn " + turn);
         }
+        if (word != null && (showed.split("_").length == 1 || missedLetters.length() == 11)) {
+            notifyConnections("end");
+            wordLength = 0;
+            turn = -1;
+            word = null;
+            chooseTurn++;
+            notifyConnections("turn " + turn);
+            notifyConnections("choose " + chooseTurn);
+        }
     }
     
     void clientRoutine()
     {
         super.clientRoutine();
-        while (chooseTurn == myid && word == null) {
+        if (timer < 120)
+            timer++;
+        while (chooseTurn == myid && word == null && timer >= 120) {
             word = readString("Enter a word to guess", "Word").toLowerCase();
             if (((Pendu)currentGame).isWordValid())
                 if (isServer) {
@@ -67,8 +79,11 @@ class Pendu extends Game
                     wordLength = word.length();
                     for (int i = 0; i < wordLength; i++)
                         showed = showed + "_";
-                } else
+                    missedLetters = "";
+                } else {
                     client.out.println("word " + word);
+                    client.out.flush();
+                }
             else {
                 while (!isWordValid())
                     word = readString("Invalid word\nThere needs to be only letters\n\nEnter a word to guess", "Word").toLowerCase();
@@ -82,8 +97,11 @@ class Pendu extends Game
                             notifyConnections("letter " + i + " -");
                         } else
                             showed = showed + "_";
-                } else
+                        missedLetters = "";
+                } else {
                     client.out.println("word " + word);
+                    client.out.flush();
+                }
             }
         }
     }
@@ -91,22 +109,56 @@ class Pendu extends Game
     void displayElements()
     {
         super.displayElements();
+        fill(255);
         if (word == null)
             text((chooseTurn < 0 ? "The host" : "Player " + (1 + chooseTurn)) + " is choosing a word", 400, 15);
         else
             text((turn < 0 ? "The host" : "Player " + (1 + turn)) + " is choosing a letter", 400, 15);
         textSize(20);
         text(showed, 335 - showed.length() * 5, 250);
-        if (chooseTurn == myid) {
+        textSize(15);
+        for (int i = 0; i < missedLetters.length(); i++)
+            text(missedLetters.charAt(i), i * 10 + 100, 400);
+        if (chooseTurn == myid && word != null) {
             textSize(10);
             text("The word is: \"" + word + "\"", 560 - word.length() * 5.00001, 10);
+        }
+        stroke(255);
+        fill(0);
+        switch (missedLetters.length()) {
+            default:
+                line(500, 370, 510, 385);
+            case 10:
+                line(500, 370, 490, 385);
+            case 9:
+                line(500, 360, 510, 355);
+            case 8:
+                line(500, 360, 490, 355);
+            case 7:
+                line(500, 350, 500, 370);
+            case 6:
+                ellipse(480, 310, 40, 40);
+            case 5:
+                line(500, 300, 500, 310);
+            case 4:
+                line(425, 315, 440, 300);
+            case 3:
+                line(425, 300, 500, 300);
+            case 2:
+                line(425, 430, 425, 300);
+            case 1:
+                ellipse(400, 430, 50, 50);
+                fill(0);
+                noStroke();
+                rect(400, 450, 50, 30);
+            case 0:
         }
     }
     
     void keyPressed(int keyCode, char key) {
         if (key >= 'A' && key <= 'Z')
             key -= 'A' + 'a';
-        if (turn == myid && key >= 'a' && key <= 'z') {
+        if (turn == myid && key >= 'a' && key <= 'z' && word != null) {
             if (isServer) {
                 char[] array = word.toCharArray();
                 char letter = key;
@@ -116,7 +168,7 @@ class Pendu extends Game
                     if (array[i] == letter && showed.charAt(i) == '_') {
                         notifyConnections("letter " + letter + " " + i);
                         found = true;
-                        showed = showed.subSequence(0, i - 1).toString() + letter + showed.subSequence(i, wordLength).toString();
+                        showed = showed.subSequence(0, i).toString() + letter + showed.subSequence(i + 1, wordLength).toString();
                     }
                 }
                 if (!found) {
@@ -139,8 +191,9 @@ class Pendu extends Game
             if (!isWordValid())
                 return;
             wordLength = word.length();
-            notifyConnections("length " + word.length());
+            notifyConnections("length " + wordLength);
             showed = "";
+            missedLetters = "";
             for (int i = 0; i < wordLength; i++)
                 if (word.charAt(i) == '-') {
                     showed = showed + "-";
@@ -151,12 +204,14 @@ class Pendu extends Game
             wordLength = Integer.parseInt(data.subSequence(7, data.length()).toString());
             word = "";
             showed = "";
+            missedLetters = "";
             for (int i = 0; i < wordLength; i++)
                 showed = showed + "_";
         } else if (data.startsWith("end")) {
             wordLength = 0;
             turn = -1;
             chooseTurn = -1;
+            timer = 0;
             word = null;
         } else if (data.startsWith("turn")) {
             turn = Integer.parseInt(data.subSequence(5, data.length()).toString());

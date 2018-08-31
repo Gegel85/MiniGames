@@ -1,9 +1,10 @@
-int AddToConnexionArray(String[] strings, Connexion[] array, Connexion newConnexion)
+int AddToConnectionArray(String[] strings, Connection[] array, Connection newConnection)
 {
     for (int i = 0; i < array.length; i++)
         if (array[i] == null) {
-            strings[i] = newConnexion.socket.getLocalAddress().toString();
-            array[i] = newConnexion;
+            strings[i] = newConnection.socket.getLocalAddress().toString();
+            array[i] = newConnection;
+            newConnection.index = i;
             return i;
         }
     return -1;
@@ -34,14 +35,4 @@ Boolean compareStrings(String str1, String str2)
         if (array1[i] != array2[i])
             return (false);
     return (true);
-}
-
-int firstSpace(String str)
-{
-    char[] array = str.toCharArray();
-    
-    for (int i = 0; i < array.length; i++)
-        if (array[i] == ' ')
-            return (i);
-    return str.length();
 }

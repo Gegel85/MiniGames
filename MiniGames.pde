@@ -8,9 +8,9 @@ int nbOfClientsConnected = 0;
 String[] clientsBanned;
 String[] connected = new String[16];
 boolean[] spectator = new boolean[17];
-Connexion[] clientsConnected = new Connexion[16];
-Connexion client;
-ConnexionsAcceptor acceptor;
+Connection[] clientsConnected = new Connection[16];
+Connection client;
+ConnectionsAcceptor acceptor;
 int myid = -1;
 int menu = 0;
 int turn = -1;
@@ -18,13 +18,15 @@ Game currentGame;
 
 void setup()
 {
+    ellipseMode(CORNER);
+    frameRate(60);
     size(640, 480);
     if (readBool("Host ?", "Do you want to host ?")) {
         isServer = true;
-        acceptor = new ConnexionsAcceptor();
+        acceptor = new ConnectionsAcceptor();
     } else {
         try {
-            client = new Connexion(new Socket(readString("IP Address", "Enter the ip address of the server"), readInteger("Port", "Enter port")));
+            client = new Connection(new Socket(readString("IP Address", "Enter the ip address of the server"), readInteger("Port", "Enter port")));
         } catch(Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, e + "", "Communication Error", JOptionPane.ERROR_MESSAGE);
@@ -57,6 +59,7 @@ void draw()
     try {
         background(0);
         textSize(10);
+        fill(255);
         if (isServer)
             checkDisconnectedClients();
         else

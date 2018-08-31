@@ -13,16 +13,14 @@ void keyPressed()
             notifyConnections("change menu " + menu);
         }
         if (keyCode == 27 && isServer) {
-            keyCode = 0;
-            key = 0;
             if (menu > 1) {
                 menu -= 2;
+                currentGame = null;
                 notifyConnections("change menu " + menu);
             }
         }
-        if (currentGame != null) {
+        if (currentGame != null)
             currentGame.keyPressed(keyCode, key);
-        }
     } catch (Exception e) {
         e.printStackTrace();
         if (isServer)
@@ -30,6 +28,8 @@ void keyPressed()
         JOptionPane.showMessageDialog(null, "Unexpected error in main chunk: " + e, "Error", JOptionPane.ERROR_MESSAGE);
         exit();
     }
+    keyCode = 0;
+    key = 0;
 }
 
 void mousePressed()

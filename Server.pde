@@ -1,10 +1,10 @@
-public class ConnexionsAcceptor extends Thread {
+public class ConnectionsAcceptor extends Thread {
     ServerSocket ss;
 
     public void accept() {
         int found = 0;
         Socket socket = null;
-        Connexion connexion;
+        Connection Connection;
         PrintWriter out;
         int index;
     
@@ -45,25 +45,25 @@ public class ConnexionsAcceptor extends Thread {
                 socket.close();
                 return;
             }
-            connexion = new Connexion(socket);
-            index = AddToConnexionArray(connected, clientsConnected, connexion);
+            Connection = new Connection(socket);
+            index = AddToConnectionArray(connected, clientsConnected, Connection);
             nbOfClientsConnected++;
-            connexion.out.println("change menu " + menu);
+            Connection.out.println("change menu " + menu);
             for (int i = 0; i < clientsConnected.length; i++)
                 if (i == index) {
-                    connexion.out.println("connected " + connexion.socket.getLocalAddress().toString());
+                    Connection.out.println("connected " + Connection.socket.getLocalAddress().toString());
                 } else if (clientsConnected[i] != null) {
-                    connexion.out.println("connected " + clientsConnected[i].socket.getLocalAddress().toString());
-                    clientsConnected[i].out.println("connected " + connexion.socket.getLocalAddress().toString());
+                    Connection.out.println("connected " + clientsConnected[i].socket.getLocalAddress().toString());
+                    clientsConnected[i].out.println("connected " + Connection.socket.getLocalAddress().toString());
                     clientsConnected[i].out.flush();
                 }
             for (int i = 0; i < spectator.length; i++)
                 if (spectator[i])
-                    connexion.out.println("spectator " + i);
-            connexion.out.flush();
+                    Connection.out.println("spectator " + i);
+            Connection.out.flush();
             println("Client n°" + nbOfClientsConnected + " connected with IP " + socket.getLocalAddress().toString() + " id: " + index);
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(null, e + "", "Connexion Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e + "", "Connection Error", JOptionPane.ERROR_MESSAGE);
             try {
                 if (socket != null) {
                     out = new PrintWriter(socket.getOutputStream());
@@ -81,7 +81,7 @@ public class ConnexionsAcceptor extends Thread {
         }
     }
 
-    public ConnexionsAcceptor() {
+    public ConnectionsAcceptor() {
         try {
             ss = new ServerSocket(readInteger("Port", "Enter port"));
         } catch(Exception e) {

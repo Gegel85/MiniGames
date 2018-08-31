@@ -5,7 +5,11 @@ class Game
     
     void useRecievedData(String data)
     {
-        
+        if (data.startsWith("spectator")) {
+            spectator[Integer.parseInt(data.subSequence(10, data.length()).toString())] = !spectator[Integer.parseInt(data.subSequence(10, data.length()).toString())];
+            if (isServer)
+                notifyConnections(data);
+        }
     }
     
     void serverRoutine()
@@ -24,5 +28,6 @@ class Game
     }
     
     void keyPressed(int keyCode, char key) {
-           }
+        
+    }
 }
