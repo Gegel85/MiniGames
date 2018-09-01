@@ -76,14 +76,22 @@ class Pendu extends Game
                 word = readString((word == null ? "" : "Invalid word\nThere needs to be only letters\n\n") + "Enter a word to guess", "Word").toLowerCase();
             if (isServer) {
                 notifyConnections("length " + word.length());
+                showed = "";
+                wordLength = word.length();
+                for (int i = 0; i < wordLength; i++)
+                    if (word.charAt(i) == '-') {
+                        showed = showed + "-";
+                        notifyConnections("letter - " + i);
+                    } else
+                        showed = showed + "_";
             } else {
                 client.out.println("word " + word);
                 client.out.flush();
+                showed = "";
+                wordLength = word.length();
+                for (int i = 0; i < wordLength; i++)
+                    showed = showed + "_";
             }
-            showed = "";
-            wordLength = word.length();
-            for (int i = 0; i < wordLength; i++)
-                showed = showed + "_";
             missedLetters = "";
         }
     }
@@ -132,7 +140,7 @@ class Pendu extends Game
                 ellipse(400, 430, 50, 50);
                 fill(0);
                 noStroke();
-                rect(400, 450, 50, 30);
+                rect(400, 450, 60, 30);
             case 0:
         }
     }
